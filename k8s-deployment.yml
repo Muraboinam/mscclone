@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: my-app
+          image: maheshmu/msc:v1  #  image
+          ports:
+            - containerPort: 80  # This should match the port your Docker container exposes and also it should always the port where ypu give niginx port becuse it will take for nigink output port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  type: LoadBalancer  # Change to NodePort if LoadBalancer is unavailable if you use loadblancer it will be eassy for eks 
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 8088        # External port (Kubernetes Service port)
+      targetPort: 80  # Internal port (Your Docker container's exposed port and your nigix conf file port number)
+     
